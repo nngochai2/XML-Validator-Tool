@@ -29,3 +29,55 @@ A Java-based command-line tool that validates XML files against database records
 
 ```bash
 java -jar xml-validator.jar <path-to-xml-file>
+```
+
+### Configuration Rules
+
+#### View Mappings
+- View names and column names are case-sensitive
+- Column names can contain dots (e.g., Item.SalesOrderLineID)
+
+#### Special Cases Handling
+1. **Document Key Configuration**
+   - Must define xpath, view, and column for document identification
+   - Used for linking XML document with database records
+   - Example:
+   ```properties
+   document.key.xpath=<xpath>
+   document.key.view=<VIEW_NAME>
+   document.key.column=<ColumnName>
+   ```
+2. **XML Namespaces**
+   - All required namespaces must be defined
+   - Format: xmlns.prefix=uri
+
+3. **Special SQL Validations**
+   - For values that cannot be mapped directly to database columns (e.g., calculated totals)
+   - Each validation needs both an xpath and query definition
+   ```properties
+   sql.validation.<name>.xpath=<XPath>
+   sql.validation.<name>.query=<SQL query>
+   ```
+
+4. **Multi-path Validations**
+   Two types of multi-path validations are supported:
+   **Priority Paths**:
+   - Used when validation depends on database state
+   - Example:
+     
+   ```properties
+   # Higer priority column with their XPaths
+   view.VIEW_NAME_1.ColumnName1.paths=1,xpath1,xpath2,xpath3,...
+
+   # Lower priority column with their XPaths
+   view.VIEW_NAME_1.ColumnName2.paths=2,xpath1,xpath2,xpath3,...
+   ```
+   
+   **Standalone Paths**:
+   - Always validated independently of other rules
+   - Not affected by priority logic
+   - Example:
+   ```properties
+   view.VIEW_NAME.ColumnName.standalone.xpath=0,xpath1,xpath2,xpath3,...
+   ```
+   
